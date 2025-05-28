@@ -1,0 +1,120 @@
+    <h2>Log Absen Shuttle {{ shuttle_id }}</h2>
+<form method="get" action="/log">
+    <label>Filter:
+        <select name="filter_type" onchange="this.form.submit()">
+            <option value="all" {% if filter_type == 'all' %}selected{% endif %}>Semua</option>
+            <option value="today" {% if filter_type == 'today' %}selected{% endif %}>Hari Ini</option>
+            <option value="this_month" {% if filter_type == 'this_month' %}selected{% endif %}>Bulan Ini</option>
+            <option value="this_year" {% if filter_type == 'this_year' %}selected{% endif %}>Tahun Ini</option>
+            <option value="date_range" {% if filter_type == 'date_range' %}selected{% endif %}>Range Tanggal</option>
+        </select>
+    </label>
+    <br>
+    {% if filter_type == 'date_range' %}
+        <label>Dari: <input type="date" name="start_date" value="{{ start_date }}"></label>
+        <label>Sampai: <input type="date" name="end_date" value="{{ end_date }}"></label>
+        <button type="submit">Terapkan</button>
+    {% endif %}
+</form>
+
+<h3>Total Absen: {{ total_absen }}</h3>
+
+
+    <table>
+    <thead>
+        <tr>
+            <th>Nama Karyawan</th>
+            <th>Departemen</th>
+            <th>Tanggal Absen</th>
+            <th>Waktu Absen</th>
+            <th>Shuttle Asal</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for log in logs %}
+        <tr>
+            <td>{{ log.nama }}</td>
+            <td>{{ log.departemen }}</td>
+            <td>{{ log.waktu_absen_date }}</td>
+            <td>{{ log.waktu_absen_time }}</td>
+            <td>{{ log.mapping_shuttle }}</td>
+            <td>
+                {% if log.mapping_shuttle == shuttle_id %}
+                    <span class="status-oke">Sesuai Mapping</span>
+                {% else %}
+                    <span class="status-wrong">Naik Shuttle Lain</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+
+
+<a href="/dashboard">← Kembali ke Dashboard</a>
+
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+    }
+
+    h2 {
+        margin-bottom: 20px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+
+    th, td {
+        padding: 10px;
+        border: 1px solid #ccc;
+        text-align: left;
+    }
+
+    th {
+        background-color: #000;
+    }
+
+    tr:nth-child(even) {
+        background-color: #fafafa;
+    }
+
+    a {
+        text-decoration: none;
+        color: #007BFF;
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
+
+    .status-oke {
+        color: green;
+        font-weight: bold;
+    }
+
+    .status-wrong {
+        color: red;
+        font-weight: bold;
+    }
+</style>
+
+<script>
+    function toggleDateInputs() {
+    const filterType = document.getElementById('filter_type').value;
+    const dateInputs = document.getElementById('date_range_inputs');
+    if(filterType === 'date_range') {
+        dateInputs.style.display = 'inline';
+    } else {
+        dateInputs.style.display = 'none';
+    }
+}
+</script>

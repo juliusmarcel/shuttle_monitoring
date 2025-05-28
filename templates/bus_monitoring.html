@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Bus Monitoring</title>
+    <link rel="stylesheet" href="/static/style.css" />
+    <style>
+        .status-card {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+        }
+        .card {
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            width: 30%;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .card.total {
+            background-color: #f8f9fa;
+        }
+        .card.active {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .card.inactive {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .card h3 {
+            margin-top: 0;
+        }
+        .card .count {
+            font-size: 2em;
+            font-weight: bold;
+        }
+        
+        table {
+            width: 90%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .status-active {
+            color: green;
+            font-weight: bold;
+        }
+        .status-inactive {
+            color: red;
+            font-weight: bold;
+        }
+        .last-sync {
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="dashboard-header">
+        <h1>Bus Activity Monitoring</h1>
+        <p>Last updated: {{ current_time }}</p>
+    </div>
+
+    <div class="status-card">
+        <div class="card total">
+            <h3>Total Buses</h3>
+            <div class="count">{{ total_buses }}</div>
+        </div>
+        
+        <div class="card active">
+            <h3>Active Buses</h3>
+            <div class="count">{{ active_buses }}</div>
+        </div>
+        <div class="card inactive">
+            <h3>Inactive Buses</h3>
+            <div class="count">{{ inactive_buses }}</div>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Bus Name</th>
+                <th>Last Sync</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for bus in bus_activities %}
+            <tr>
+                <td>{{ bus.hostname }}</td>
+                <td class="last-sync">{{ bus.last_sync }}</td>
+                <td class="status-{{ bus.status.lower() }}">{{ bus.status }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

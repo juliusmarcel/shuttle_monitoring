@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Bus Data</title>
+    <link rel="stylesheet" href="/static/style.css" />
+    <style>
+        
+        #searchInput {
+            width: 90%;
+            margin: 0 auto 15px auto;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            display: block;
+        }
+        table {
+            width: 90%;
+            margin: 0 auto 30px auto;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #007bff;
+        }
+        .menu-links {
+            width: 90%;
+            margin: 0 auto 20px auto;
+            display: flex;
+            justify-content: flex-start;
+            gap: 20px;
+        }
+        .menu-links a {
+            text-decoration: none;
+            background-color: #28a745;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-weight: 600;
+        }
+        .menu-links a:hover {
+            background-color: #218838;
+        }
+        .total-count {
+            width: 90%;
+            margin: 0 auto 15px auto;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        .btn-log {
+            padding: 5px 10px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .btn-log:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="dashboard-header">
+        <h1>Dashboard Data Bus</h1>
+    </div>
+
+    <div class="filter-container">
+        <form method="get" action="/data_bus" class="filter-form">
+            <div class="filter-group">
+                <label>Filter by Date Range:</label>
+                <input type="date" name="start_date" value="{{ start_date }}">
+                <span>to</span>
+                <input type="date" name="end_date" value="{{ end_date }}">
+                <button type="submit">Apply Filter</button>
+                {% if start_date or end_date %}
+                    <a href="/data_bus" style="margin-left: 10px; color: #007bff; text-decoration: underline;">Clear Filter</a>
+                {% endif %}
+            </div>
+            {% if start_date or end_date %}
+            <div style="text-align:center; font-weight: bold; margin-top: 10px;">
+                Showing data from {{ start_date }} to {{ end_date }}
+            </div>
+            {% endif %}
+        </form>
+    </div>
+
+    <div class="total-count">Total Buses: {{ total_buses }}</div> 
+    <div class="menu-links">
+    <!-- <a href="/data_bus">Data Bus</a>
+    <a href="/bus_monitoring">Bus Monitoring</a> -->
+    <a href="/bus_matrix">Monitoring Status Online (Matrix View)</a>
+</div>
+
+    <div class="filter-container" style="margin-top: 10px;">
+        <input type="text" id="searchInput" placeholder="Search Bus ID or Tap Count...">
+    </div>
+
+    <table id="busTable">
+        <thead>
+            <tr>
+                <th>Bus ID</th>
+                <th>Total Tap</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for bus in buses %}
+            <tr>
+                <td>{{ bus.bus_id }}</td>
+                <td>{{ bus.total_tap }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+        const searchInput = document.getElementById("searchInput");
+        const table = document.getElementById("busTable");
+        searchInput.addEventListener("keyup", function () {
+            const keyword = searchInput.value.toLowerCase();
+            const rows = table.querySelectorAll("tbody tr");
+            rows.forEach((row) => {
+                const rowText = row.innerText.toLowerCase();
+                row.style.display = rowText.includes(keyword) ? "" : "none";
+            });
+        });
+    </script>
+</body>
+
+</html>

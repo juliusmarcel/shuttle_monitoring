@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Employee Mapping</title>
+    <link rel="stylesheet" href="/static/style.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        .attendance-column {
+        display: none;
+    }
+
+        
+
+        .filter-container {
+            width: 95%;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            color: #2c3e50;
+            min-width: 80px;
+        }
+
+        .filter-group input, .filter-group select {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            flex: 1;
+        }
+
+        .search-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            width: 100%;
+        }
+
+        .search-group input {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            flex: 1;
+        }
+
+        .filter-actions {
+            display: flex;
+            gap: 10px;
+            margin-left: auto;
+        }
+
+        .btn {
+            padding: 8px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .status-count {
+            width: 95%;
+            margin: 0 auto 15px auto;
+            font-weight: bold;
+            font-size: 1.1em;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .table-container {
+            width: 95%;
+            margin: 20px auto;
+            overflow-x: auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .employee-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9em;
+        }
+
+        .employee-table th, .employee-table td {
+            border: 1px solid #e0e0e0;
+            padding: 12px;
+            text-align: left;
+        }
+
+        .employee-table th {
+            background-color: #007bff;
+            color: white;
+            position: sticky;
+            top: 0;
+        }
+
+        .employee-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .employee-table tr:hover {
+            background-color: #e9ecef;
+        }
+
+        @media (max-width: 768px) {
+            .filter-form {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .filter-group {
+                min-width: 100%;
+            }
+            
+            .filter-actions {
+                margin-left: 0;
+                justify-content: flex-end;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="dashboard-header">
+        <h1>Employee List</h1>
+    </div>
+    
+    <div class="filter-container">
+        <form method="get" action="/mapping" class="filter-form">
+            
+            
+            <div class="search-group">
+    <label for="searchInput">Masukkan NIP atau Nama:</label>
+    <input type="text" id="searchInput" placeholder="Search by NIP or Name...">
+</div>
+
+        </form>
+    </div>
+    
+    <div class="status-count">
+        Total Employees: <strong>{{ total_employees }}</strong>
+        
+    </div>
+    
+    <div class="table-container">
+        <table class="employee-table" id="employeeTable">
+            <thead>
+                <tr>
+                    <th>NIP</th>
+                    <th>Employee Name</th>
+                    <th class="attendance-column">Total Attendance</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for employee in employees %}
+                <tr>
+                    <td>{{ employee.nip }}</td>
+                    <td>{{ employee.nama }}</td>
+                    <td class="attendance-column">{{ employee.total_absensi }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Live search functionality
+        const searchInput = document.getElementById("searchInput");
+        const table = document.getElementById("employeeTable");
+        
+        searchInput.addEventListener("keyup", function() {
+        const keyword = searchInput.value.toLowerCase();
+        const rows = table.querySelectorAll("tbody tr");
+        
+        rows.forEach((row) => {
+            const nip = row.cells[0].textContent.toLowerCase();
+            const name = row.cells[1].textContent.toLowerCase();
+            
+            if (nip.includes(keyword) || name.includes(keyword)) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    });
+    </script>
+</body>
+</html>

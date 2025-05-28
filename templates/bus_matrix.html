@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Bus Activity Matrix</title>
+    <link rel="stylesheet" href="/static/style.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        .dashboard-header {
+            width: 95%;
+            margin: 20px auto;
+            padding: 20px 0;
+        }
+
+        
+
+.filter-container {
+    width: 95%;
+    margin: 10px auto;
+    background-color: #fff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    max-width: 900px;
+}
+
+.filter-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+    min-width: 200px;
+}
+
+.filter-group label {
+    font-weight: 500;
+    color: #2c3e50;
+    min-width: 60px;
+    font-size: 13px;
+}
+
+.filter-group input,
+.filter-group select {
+    padding: 4px 6px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    flex: 1;
+    font-size: 13px;
+}
+
+.filter-actions {
+    display: flex;
+    gap: 6px;
+    margin-left: auto;
+}
+
+.btn {
+    padding: 6px 12px;
+    font-size: 13px;
+}
+
+
+        .btn {
+            padding: 8px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-reset {
+            background-color: #6c757d;
+        }
+
+        .btn-reset:hover {
+            background-color: #5a6268;
+        }
+
+        .status-count {
+            width: 95%;
+            margin: 0 auto 15px auto;
+            font-weight: bold;
+            font-size: 1.1em;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .matrix-container {
+            width: 95%;
+            margin: 20px auto;
+            overflow-x: auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            max-height: 80vh;
+        }
+
+        .matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9em;
+        }
+
+        .matrix-table th, .matrix-table td {
+            border: 1px solid #e0e0e0;
+            padding: 8px;
+            text-align: center;
+            min-width: 40px;
+        }
+
+        .matrix-table th {
+            background-color: #2c3e50;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .bus-name {
+            background-color: #ecf0f1;
+            position: sticky;
+            left: 0;
+            font-weight: bold;
+            z-index: 5;
+            white-space: nowrap;
+        }
+
+        .time-header {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 60px;
+            height: 40px;
+            vertical-align: bottom;
+            padding-bottom: 5px;
+        }
+
+        .active-cell {
+            background-color: #28a745;
+            color: white;
+            font-weight: bold;
+        }
+
+        .inactive-cell {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9em;
+            padding: 5px 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+            border: 1px solid #ddd;
+        }
+
+        .empty-message {
+            text-align: center;
+            padding: 20px;
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+    .filter-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-group {
+        min-width: 100%;
+    }
+
+    .filter-actions {
+        justify-content: flex-end;
+        margin-left: 0;
+    }
+}
+
+    </style>
+</head>
+<body>
+    {% include 'navbar.html' %}
+    <div class="dashboard-header">
+        <h1>Bus Activity Matrix</h1>
+        <p>Last updated: {{ current_time }}</p>
+    </div>
+    
+    <div class="filter-container">
+        <form method="get" action="/bus_matrix" class="filter-form">
+            <div class="filter-group">
+                <label for="date">Date:</label>
+                <input type="date" id="date" name="date" value="{{ current_date }}">
+            </div>
+            
+            <div class="filter-group">
+                <label for="bus_search">Search:</label>
+                <input type="text" id="bus_search" name="bus_search" value="{{ bus_search }}" placeholder="Enter bus name...">
+            </div>
+            
+            <div class="filter-actions">
+                <button type="submit" class="btn">Apply</button>
+                <a href="/bus_matrix" class="btn btn-reset">Reset</a>
+            </div>
+        </form>
+    </div>
+    
+    <div class="status-count">
+        Showing data for: <strong>{{ current_date }}</strong> | 
+        Total Buses: <strong>{{ bus_names|length }}</strong> | 
+        Time Intervals: <strong>{{ time_intervals|length }}</strong>
+        {% if bus_search %} | Filtered by: <strong>{{ bus_search }}</strong>{% endif %}
+    </div>
+    
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-color active-cell"></div>
+            <span>Active (Data received)</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color inactive-cell"></div>
+            <span>Inactive (No data)</span>
+        </div>
+    </div>
+    
+    <div class="matrix-container">
+        {% if bus_names %}
+        <table class="matrix-table">
+            <thead>
+                <tr>
+                    <th>Bus Name</th>
+                    {% for interval in time_intervals %}
+                    <th class="time-header" title="{{ interval }}">
+                        {{ interval[11:16] }}
+                    </th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for bus in bus_names %}
+                <tr>
+                    <td class="bus-name" title="{{ bus }}">{{ bus }}</td>
+                    {% for interval in time_intervals %}
+                    <td class="{% if matrix[bus][interval] > 0 %}active-cell{% else %}inactive-cell{% endif %}"
+                        title="Bus: {{ bus }}, Time: {{ interval }}, Count: {{ matrix[bus][interval] }}">
+                        {% if matrix[bus][interval] > 0 %}✓{% else %}✗{% endif %}
+                    </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-message">
+            No bus data found for the selected filters.
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // Make the filter form work
+        document.querySelector('.filter-actions button').addEventListener('click', function() {
+            const date = document.getElementById('date').value;
+            const busSearch = document.getElementById('bus_search').value;
+            
+            let url = '/bus_matrix?';
+            if (date) url += `date=${date}`;
+            if (busSearch) url += `${date ? '&' : ''}bus_search=${encodeURIComponent(busSearch)}`;
+            
+            window.location.href = url;
+        });
+        
+        // Allow pressing Enter in search field to submit
+        document.getElementById('bus_search').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.querySelector('.filter-actions button').click();
+            }
+        });
+    </script>
+</body>
+</html>
